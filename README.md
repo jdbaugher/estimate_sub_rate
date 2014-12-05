@@ -1,6 +1,6 @@
 strane 
 ======
-# Substitution TRANsition Estimation workflow
+## Substitution TRANsition Estimation workflow
 
 This workflow provides software tools to estimate nucleotide substitution 
 rates over time from sequencing reads using statistical inference. The 
