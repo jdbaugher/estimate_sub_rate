@@ -1,6 +1,6 @@
 #!/usr/bin/env perl -w
 # calculate_frequencies.pl
-# Author: Joseph D. Baugher, <jbaughe2@jhmi.edu>
+# Author: Joseph D. Baugher, <jbaughe2(at)jhmi.edu>
 # Copyright (c) 2014 Joseph D. Baugher
 
 use strict;
