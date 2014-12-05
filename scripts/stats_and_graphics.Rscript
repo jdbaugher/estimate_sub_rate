@@ -1,0 +1,188 @@
+#!/usr/bin/Rscript
+# stats_and_graphics.Rscript
+# Author: Joseph D. Baugher, <jbaughe2@jhmi.edu>
+# Copyright (c) 2014 Joseph D. Baugher
+
+# This script performs significance testing, outlier removal and plotting of results for
+# 54 Control samples and 51 ribavirin-treated samples - separated by Lab, Group,
+# Replicate, and Transition (No samples for Lab2 control P20 Replicate3)
+
+########## Subroutines #############
+
+stats.and.outlier.removal <- function(lab) {
+  c.ct<-t.ct<-0
+  rates<-NULL
+
+  # Get transition results
+  for(k in c('T','C')){
+    for(j in lab){
+      for(i in c(2,3,4)){
+        for(r in c(1,2,3)){
+          for(p in c("P10","P15","P20")){
+            file.name = paste("opt.kl.L",j,"-",k,"-A",i,"-R",r,"-",p,".gradient.Rdata",sep="")
+            if(file.exists(file.name)){
+              if(k=='T'){t.ct<-t.ct+1}
+              if(k=='C'){c.ct<-c.ct+1}
+              load(file.name)
+
+              alpha<-c('A','C','G','T')
+              M<-matrix(c(opt.kl$p1,opt.kl$p2,opt.kl$p3,opt.kl$p4,opt.kl$p5,opt.kl$p6,
+                opt.kl$p7,opt.kl$p8,opt.kl$p9,opt.kl$p10,opt.kl$p11,opt.kl$p12,opt.kl$p13,
+                opt.kl$p14,opt.kl$p15,opt.kl$p16),nrow=4,dimnames=list(alpha,alpha))
+              for(a in alpha) {M[a,] <- exp(-M[a,])/sum(exp(-M[a,]))}
+              rates<-rbind(rates,as.vector(M)) 
+            }
+          }
+        }
+      }
+    }
+  }
+
+  stderr <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+  rate.results <- NULL
+  trimmed.test <- trimmed.ctrl <-matrix(ncol=16,rep(NA,ncol(rates)*nrow(rates)))
+
+  ### Perform statistical tests and outlier removal
+
+  for(i in 1:length(rates[1,])) {
+    test<-rates[c(1:t.ct),i]
+    ctrl<-rates[c((t.ct+1):(t.ct+c.ct)),i]
+    m.t<-median(log(test))
+    m.c<-median(log(ctrl))
+    mad.t<-mad(log(test))
+    mad.c<-mad(log(ctrl))
+    indices.t<-which(log(test) <= m.t+(3*mad.t) & log(test) >= m.t-(3*mad.t))
+    indices.c<-which(log(ctrl) <= m.c+(3*mad.c) & log(ctrl) >= m.c-(3*mad.c))
+    test<-test[indices.t]
+    ctrl<-ctrl[indices.c]
+
+    t<-t.test(test,ctrl)  
+    w<-wilcox.test(test,ctrl)
+    stderr.t<-stderr(test)
+    stderr.c<-stderr(ctrl)
+    mean.ratio<-(t$estimate[1][[1]])/(t$estimate[2][[1]])
+    median.ratio<-median(test)/median(ctrl)
+    quant.t<-quantile(test,c(0.05,0.95))
+    quant.c<-quantile(ctrl,c(0.05,0.95))
+    rate.results<-rbind(rate.results,c(t$estimate[1][[1]],stderr.t,t$estimate[2][[1]],stderr.c,
+    mean.ratio,median(test),quant.t["5%"][[1]],quant.t["95%"][[1]],
+    median(ctrl),quant.c["5%"][[1]],quant.c["95%"][[1]],
+    median.ratio,t$p.value,w$p.value))
+    trimmed.test[indices.t,i]<-test
+    trimmed.ctrl[indices.c,i]<-ctrl
+  }
+
+  rate.results<-cbind(rate.results,p.adjust(rate.results[,13],method="bonferroni"),
+    p.adjust(rate.results[,14],method="bonferroni"))
+
+
+  ### Reorder transitions  
+  trans   <- c('A->A','C->A','G->A','U->A','A->C','C->C','G->C','U->C',
+         'A->G','C->G','G->G','U->G','A->U','C->U','G->U','U->U')  
+  rate.results<-data.frame(trans,rate.results)
+  colnames(rate.results)<-c("Transitions","Test.mean","StdErr","Control.mean","StdErr","Mean Ratio",
+  "Test Median", "5%","95%","Ctrl Median", "5%","95%","Median Ratio", "ttest.p.value",
+    "wilcox.p.value","adjusted.ttest.p.value","adjusted.wilcox.p.value")
+
+  sequence=c(1,5,9,13,2,6,10,14,3,7,11,15,4,8,12,16)
+  sorted.rate.results<-rate.results[sequence,]
+
+  # Now in the following order:
+  # 'A->A','A->C','A->G','A->U','C->A','C->C','C->G','C->U','G->A','G->C',
+  # 'G->G','G->U','U->A','U->C','U->G','U->U'
+
+  ### Save results file
+  write.table(sorted.rate.results, file=paste("Lab",paste(lab,collapse="&",sep=""),
+    ".trimmed.txt",sep=""),sep="\t", row.names=F, col.names=T,quote=F)
+
+  ### Remove diagonal positions from the matrix (ie. A->A)
+  sequence=c(5,9,13,2,10,14,3,7,15,4,8,12)
+  sorted.rate.results<-rate.results[sequence,]
+  sorted.test<-trimmed.test[,sequence]
+  sorted.ctrl<-trimmed.ctrl[,sequence]
+  s.c=sorted.ctrl
+  s.t=sorted.test
+  
+  # Now in the following order:
+  # 'A->C','A->G','A->U','C->A','C->G','C->U','G->A','G->C','G->U','U->A','U->C','U->G'
+
+  ### Sort by mutation rate
+  new.sequence=c(11,2,6,7,9,1,3,5,4,10,12,8)
+  sorted.rate.results<-sorted.rate.results[new.sequence,]
+  sorted.test2<-sorted.test[,new.sequence]
+  sorted.ctrl2<-sorted.ctrl[,new.sequence]
+  s.c=sorted.ctrl2
+  s.t=sorted.test2
+
+  # Now in the following order:
+  # 'U->C','A->G','C->U','G->A','G->U','A->C','A->U','C->G','C->A','U->A','U->G','G->C'
+
+  sorted.values<-NULL
+  for(i in 1:ncol(s.c)){sorted.values<-cbind(sorted.values,s.c[,i],s.t[,i])}
+
+  return(list(sorted.values, sorted.rate.results))
+}
+
+plot_stars <- function(pvalues) {
+  for(i in 1:length(pvalues)){
+    x <- (i*2)-0.5
+    if(pvalues[i] < 0.001) {
+    mtext("***",side=3,at=x,cex=1.5,padj=0.5)
+    } else if (pvalues[i] < 0.01) {
+    mtext("**",side=3,at=x,cex=1.5,padj=0.5)
+    } else if (pvalues[i] < 0.05) {
+    mtext("*",side=3,at=x,cex=1.5,padj=0.5)
+    }
+  }
+}
+
+
+############# Main ##############
+
+lab = 1
+lab1.list<-stats.and.outlier.removal(lab)
+lab1.values  <- lab1.list[[1]]
+lab1.results <- lab1.list[[2]]
+lab = 2
+lab2.list<-stats.and.outlier.removal(lab)
+lab2.values  <- lab2.list[[1]]
+lab2.results <- lab2.list[[2]]
+lab = c(1,2)
+lab1and2.list<-stats.and.outlier.removal(lab)
+lab1and2.values  <- lab1and2.list[[1]]
+lab1and2.results <- lab1and2.list[[2]]
+
+
+### Plot results
+plot.new()
+
+pdf(paste("Lab",paste(lab,collapse="&",sep=""),".transitions-trimmed.pdf",sep=""),width=7,height=6)
+
+par(mfrow=c(3,1), oma = c(1,4,2,0) + 0.1, mar = c(1.3,0,1,1) + 0.1)
+
+boxplot(lab1and2.values,log='y', col=rep(c("white","gray"),ncol(lab1and2.values)), axes=F, frame.plot=TRUE)
+axis(side=1, labels=FALSE, at=1:ncol(lab1and2.values))
+axis(side=2, las=0, cex.axis=0.9)
+mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
+mtext("A.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
+plot_stars(lab1and2.results$adjusted.wilcox.p.value)
+
+boxplot(lab1.values,log='y', col=rep(c("white","gray"),ncol(lab1and2.values)), axes=F, frame.plot=TRUE)
+axis(side=1, labels=FALSE, at=1:ncol(lab1.values))
+axis(side=2, las=0, cex.axis=0.9)
+mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
+mtext("B.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
+plot_stars(lab1.results$adjusted.wilcox.p.value)
+
+boxplot(lab2.values,log='y',col=rep(c("white","gray"),ncol(lab2.values)),axes=F, frame.plot=TRUE)
+axis(side=1, at=1:ncol(lab2.values), cex.axis=1.1,
+  labels=c('U->C','U->C','A->G','A->G','C->U','C->U',
+      'G->A','G->A','G->U','G->U','A->C', 'A->C',
+      'A->U','A->U','C->G','C->G','C->A','C->A',
+      'U->A','U->A','U->G','U->G','G->C','G->C'))
+axis(side=2, las=0, cex.axis=0.9)
+mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
+mtext("C.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
+plot_stars(lab2.results$adjusted.wilcox.p.value)
+
+dev.off()
