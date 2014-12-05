@@ -16,7 +16,6 @@ using recent versions of Perl, R, and X11.
     Bio::fastAPD
 #### R libraries:
     optimx
-    ggplot2
 
 ### Data for Analysis
 A subdirectory named <i>data</i> may be created in the <i>estimate_sub_rate</i> directory to house
