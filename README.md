@@ -35,6 +35,7 @@ has finished. If no errors are reported, the analysis is complete.
 ## Authors
 
 Joseph D. Baugher, Ph.D. and Fernando J. Pineda, Ph.D.
+Copyright (c) 2014 Joseph D. Baugher, Ph.D.
 
 ## Maintainer
 
