@@ -1,6 +1,6 @@
 strane 
 ======
-## Substitution TRANsition Estimation workflow
+### Substitution TRANsition Estimation workflow
 
 This workflow provides software tools to estimate nucleotide substitution 
 rates over time from sequencing reads using statistical inference. The 
@@ -9,7 +9,7 @@ results can be replicated using the haplotype data (*genotypes.sig.txt)
 available at ????. Additional details will be provided as they become available.
 
 ## Requirements
-These workflows have been tested on MACOSX and linux operating systems
+This workflow has been tested on MACOSX and linux operating systems
 using recent versions of Perl, R, and X11.
 
 #### Perl modules:
