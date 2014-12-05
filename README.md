@@ -38,7 +38,7 @@ Joseph D. Baugher, Ph.D. and Fernando J. Pineda, Ph.D.
 
 ## Maintainer
 
-Joseph D. Baugher, Ph.D. <jbaughe2(at)jhmi.edu>
+Joseph D. Baugher, Ph.D., jbaughe2(at)jhmi.edu
 
 
 
