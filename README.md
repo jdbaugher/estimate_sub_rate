@@ -1,6 +1,6 @@
 estimate_sub_rate
 ======
-### Nucleotide Substitution Rate Estimation workflow
+### Nucleotide substitution rate estimation workflow
 
 This workflow provides software tools to estimate nucleotide substitution 
 rates over time from multiple sequence alignments using statistical inference. The 
