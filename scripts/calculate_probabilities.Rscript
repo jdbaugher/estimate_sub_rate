@@ -1,0 +1,75 @@
+#!/usr/bin/Rscript
+# calculate_probabilities.Rscript
+# Author: Joseph D. Baugher, <jbaughe2@jhmi.edu>
+# Copyright (c) 2014 Joseph D. Baugher
+
+
+# Load frequency data
+freq.data<-read.delim("frequency_table.txt",header=T)
+freq.data <- freq.data[which(freq.data$Passage > 0),]
+
+# Prepare dataframe
+freq.data$P5.A <- freq.data$P5.C <- freq.data$P5.G <- freq.data$P5.T <- 
+freq.data$P10.A <- freq.data$P10.C <- freq.data$P10.G <- freq.data$P10.T <- 
+freq.data$Q10.A <- freq.data$Q10.C <- freq.data$Q10.G <- freq.data$Q10.T <- 
+freq.data$P15.A <- freq.data$P15.C <- freq.data$P15.G <- freq.data$P15.T <- 
+freq.data$Q15.A <- freq.data$Q15.C <- freq.data$Q15.G <- freq.data$Q15.T <- 
+freq.data$P20.A <- freq.data$P20.C <- freq.data$P20.G <- freq.data$P20.T <- 
+freq.data$Q20.A <- freq.data$Q20.C <- freq.data$Q20.G <- freq.data$Q20.T <- 
+as.numeric(rep(NA,length(freq.data$ID)))
+
+expand.passages <- function(dataset,lab,amplicon,group,replicate) {
+  # This function combines multiple passages (P5 - P20) of a single sample into a single 
+  # row of a dataframe
+  max.pos <- max(dataset$Position[which(dataset$Amplicon == amplicon)])
+  for(i in 1:max.pos) {
+    curr.indices <- which(dataset$Lab == lab 
+      & dataset$Amplicon == amplicon & dataset$Group == group 
+      & dataset$Replicate == replicate & dataset$Position == i)
+    
+    if(length(curr.indices)>0){
+      P5.index <- curr.indices[which(dataset$Passage[curr.indices] == 5)]
+      P10.index <- curr.indices[which(dataset$Passage[curr.indices] == 10)]
+      P15.index <- curr.indices[which(dataset$Passage[curr.indices] == 15)]
+      P20.index <- curr.indices[which(dataset$Passage[curr.indices] == 20)]
+
+      dataset$P5.A[P5.index] <- dataset$A[P5.index] / dataset$Nreads[P5.index]
+      dataset$P5.C[P5.index] <- dataset$C[P5.index] / dataset$Nreads[P5.index]
+      dataset$P5.G[P5.index] <- dataset$G[P5.index] / dataset$Nreads[P5.index]
+      dataset$P5.T[P5.index] <- dataset$T[P5.index] / dataset$Nreads[P5.index]
+
+      dataset$P10.A[P5.index] <- dataset$A[P10.index] / dataset$Nreads[P10.index]
+      dataset$P10.C[P5.index] <- dataset$C[P10.index] / dataset$Nreads[P10.index]
+      dataset$P10.G[P5.index] <- dataset$G[P10.index] / dataset$Nreads[P10.index]
+      dataset$P10.T[P5.index] <- dataset$T[P10.index] / dataset$Nreads[P10.index]
+
+      dataset$P15.A[P5.index] <- dataset$A[P15.index] / dataset$Nreads[P15.index]
+      dataset$P15.C[P5.index] <- dataset$C[P15.index] / dataset$Nreads[P15.index]
+      dataset$P15.G[P5.index] <- dataset$G[P15.index] / dataset$Nreads[P15.index]
+      dataset$P15.T[P5.index] <- dataset$T[P15.index] / dataset$Nreads[P15.index] 
+
+      if(length(P20.index)){
+        dataset$P20.A[P5.index] <- dataset$A[P20.index] / dataset$Nreads[P20.index]
+        dataset$P20.C[P5.index] <- dataset$C[P20.index] / dataset$Nreads[P20.index]
+        dataset$P20.G[P5.index] <- dataset$G[P20.index] / dataset$Nreads[P20.index]
+        dataset$P20.T[P5.index] <- dataset$T[P20.index] / dataset$Nreads[P20.index]
+      }
+    }
+  }
+  return(dataset)
+}
+
+for(lab in unique(freq.data$Lab)) {
+  for(amp in unique(freq.data$Amplicon)) {
+    for(g in unique(freq.data$Group)) {
+      for(rep in unique(freq.data$Replicate)) {
+        freq.data<-expand.passages(freq.data, lab, amp, g, rep)}}}}
+
+# Remove frequencies and keep proportions (probabilities)
+probs.data <- freq.data[which(freq.data$Passage==5),]
+probs.data$Passage<-NULL
+probs.data$gap<-probs.data$end<-probs.data$N<-NULL
+probs.data$A<-probs.data$C<-probs.data$G<-probs.data$T<-NULL
+
+save(probs.data, file="probs.data.Rdata")
+
