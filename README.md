@@ -1,9 +1,9 @@
-strane 
+estimate_sub_rate
 ======
-### Substitution TRANsition Estimation workflow
+### Nucleotide Substitution Rate Estimation workflow
 
 This workflow provides software tools to estimate nucleotide substitution 
-rates over time from sequencing reads using statistical inference. The 
+rates over time from multiple sequence alignments using statistical inference. The 
 workflow accompanies an upcoming peer-reviewed journal article. The analysis
 results can be replicated using the haplotype data (*genotypes.sig.txt) 
 available at ????. Additional details will be provided as they become available.
@@ -19,13 +19,13 @@ using recent versions of Perl, R, and X11.
     ggplot2
 
 ### Data for Analysis
-A subdirectory named <i>data</i> may be created in the <i>strane</i> directory to house
+A subdirectory named <i>data</i> may be created in the <i>estimate_sub_rate</i> directory to house
 the data for analysis.
 
 ## Usage
 
 To run the analysis - 
-From within a shell session, navigate to the <i>strane</i> directory and type:
+From within a shell session, navigate to the <i>estimate_sub_rate</i> directory and type:
 
     bash substitution_transition_analysis.sh ./data
 
