@@ -19,13 +19,13 @@ using recent versions of Perl, R, and X11.
     ggplot2
 
 ### Data for Analysis
-A subdirectory named <b>data</b> may be created in the strane directory to house
+A subdirectory named <i>data</i> may be created in the <i>strane</i> directory to house
 the data for analysis.
 
 ## Usage
 
 To run the analysis - 
-From within a shell session, navigate to the strane directory and type:
+From within a shell session, navigate to the <i>strane</i> directory and type:
 
     bash substitution_transition_analysis.sh ./data
 
