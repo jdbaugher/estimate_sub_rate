@@ -1,0 +1,113 @@
+#!/usr/bin/Rscript
+# transition_estimation_w_gradient.Rscript
+# Author: Joseph D. Baugher, <jbaughe2@jhmi.edu>
+# Copyright (c) 2014 Joseph D. Baugher
+
+
+suppressMessages(library(optimx))
+
+load("probs.data.Rdata")
+
+# suppress unnecessary warnings to stdout/stderr (parameter scaling related) 
+options(warn = -1)
+
+prepare.data <- function(x,passages) {
+  passages.p.alpha<-passages.p.beta<-NULL
+  for(i in passages[1:length(passages)-1]){passages.p.beta <- 
+    c(passages.p.beta, paste(i, ".", sep=""))}
+  for(i in passages[2:length(passages)]){passages.p.alpha <- 
+    c(passages.p.alpha, paste(i, ".", sep=""))}
+  
+  prev.p.A<-as.vector(as.matrix(x[,paste(passages.p.beta,"A",sep="")]))
+  prev.p.C<-as.vector(as.matrix(x[,paste(passages.p.beta,"C",sep="")]))
+  prev.p.G<-as.vector(as.matrix(x[,paste(passages.p.beta,"G",sep="")]))
+  prev.p.T<-as.vector(as.matrix(x[,paste(passages.p.beta,"T",sep="")]))
+
+  curr.p.A<-as.vector(as.matrix(x[,paste(passages.p.alpha,"A",sep="")]))
+  curr.p.C<-as.vector(as.matrix(x[,paste(passages.p.alpha,"C",sep="")]))
+  curr.p.G<-as.vector(as.matrix(x[,paste(passages.p.alpha,"G",sep="")]))
+  curr.p.T<-as.vector(as.matrix(x[,paste(passages.p.alpha,"T",sep="")]))
+
+  reformatted.data <- data.frame(prev.p.A,prev.p.C,prev.p.G,prev.p.T,
+    curr.p.A,curr.p.C,curr.p.G,curr.p.T)
+  return(reformatted.data)
+}  
+
+predictQ <- function(x,M) {
+  alpha <- c('A','C','G','T')
+  p<-x[,c('prev.p.A','prev.p.C','prev.p.G','prev.p.T')]
+  x[,c('q.A','q.C','q.G','q.T')] <- sum.matrix.mult(p,alpha,M)                    
+  return(x)
+}
+ 
+sum.matrix.mult <- function(p,alpha,m) {  
+  results <- NULL
+  for(a in alpha) { results <- c(results, apply(p,1,function(x){sum(x*m[,a])})) }
+  return(results)
+}
+
+fn <- function(input) {
+  alpha<-c('A','C','G','T')
+  M <- matrix(data=input,nrow=4,ncol=4,dimnames=list(alpha,alpha))
+  for(a in alpha) {M[a,] <- exp(-M[a,])/sum(exp(-M[a,]))}   
+  d = predictQ(input.data,M)
+  # Remove missing data from Lab2 P20
+  d = d[which(!is.na(d$curr.p.A)),]
+
+  p<-c('curr.p.A','curr.p.C','curr.p.G','curr.p.T')
+  q<-c('q.A','q.C','q.G','q.T')
+  values <- as.vector(as.matrix(d[p] * log(d[q])))
+  result <- -sum(values[is.finite(values)])
+  return(result)
+}
+
+gr <- function(input) {
+  alpha<-c('A','C','G','T')
+  M <- matrix(data=input,nrow=4,ncol=4,dimnames=list(alpha,alpha))
+
+  # transform and normalize M
+  for(a in alpha) {M[a,] <- exp(-M[a,])/sum(exp(-M[a,]))}   
+
+  d = predictQ(input.data,M)  
+  d = d[which(!is.na(d$curr.p.A)),]
+  
+  ratios<-c('ratio.A','ratio.C','ratio.G','ratio.T')
+  d$ratio.A <- d$curr.p.A / d$q.A
+  d$ratio.C <- d$curr.p.C / d$q.C
+  d$ratio.G <- d$curr.p.G / d$q.G
+  d$ratio.T <- d$curr.p.T / d$q.T
+
+  gradients<-NULL
+  for(a in alpha) { 
+    for(b in alpha) {
+    prev.p.b<-paste("prev.p.",b,sep="")
+    ratio.a<-paste("ratio.",a,sep="")
+    values <- d[,prev.p.b] * (d[,ratio.a] - 
+                apply(d,1,function(x){sum(x[ratios] * M[b,])}))   
+    gradients<-c(gradients, M[b,a] * sum(values[is.finite(values)]))        
+  }
+  }  
+  return(gradients)
+}
+
+passages <- c('P5','P10','P15','P20')
+init <- c(0.001,8,8,8,8,0.001,8,8,8,8,0.001,8,8,8,8,0.001)
+
+for(p in 2:length(passages)) {
+  curr.passage<-passages[c(p-1,p)]
+  for(i in unique(probs.data$Amplicon)){
+    for(j in unique(probs.data$Lab)){
+      for(k in unique(probs.data$Group)){
+        for(r in unique(probs.data$Replicate)) {
+          input.data <- prepare.data(probs.data[which(probs.data$Amplicon==i &
+            probs.data$Lab==j & probs.data$Group==k & probs.data$Replicate==r),],curr.passage)
+          # Avoid Lab2 P20 missing data
+          if(!is.na(input.data$curr.p.A[1])){
+            opt.kl<-optimx(par=init,fn=fn,gr=gr,method=c("BFGS"),itnmax=10000)
+            save(opt.kl, file=paste("opt.kl.L",j,"-",k,"-A",i,"-R",r,"-",passages[p],".gradient.Rdata",sep=""))
+          }
+        }
+      }
+    }
+  }
+}
