@@ -18,11 +18,12 @@ using recent versions of Perl, R, and X11.
     optimx
     ggplot2
 
-## Data for Analysis
+### Data for Analysis
 A subdirectory named data may be created in the strane directory to house
 the data for analysis.
 
-## The substitution transition estimation analysis
+## Usage
+
 To run the analysis - 
 From within a shell session, navigate to the strane directory and type:
 
@@ -31,7 +32,13 @@ From within a shell session, navigate to the strane directory and type:
 The analysis consists of five steps. The user will be notified when the script 
 has finished. If no errors are reported, the analysis is complete.
 
+## Authors
 
+Joseph D. Baugher, Ph.D. and Fernando J. Pineda, Ph.D.
+
+## Maintainer
+
+Joseph D. Baugher, Ph.D. <jbaughe2(at)jhmi.edu>
 
 
 
