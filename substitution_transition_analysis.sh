@@ -1,7 +1,7 @@
 #!/bin/bash
 #######################
 # substitution_transition_analysis.sh
-# Author: Joseph D. Baugher, <jbaughe2@jhmi.edu>
+# Author: Joseph D. Baugher, <jbaughe2(at)jhmi.edu>
 # Copyright © 2014 Joseph D. Baugher
 #######################
 #$ -N substitution_transition_analysis
