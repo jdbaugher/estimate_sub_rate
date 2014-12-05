@@ -19,7 +19,7 @@ using recent versions of Perl, R, and X11.
     ggplot2
 
 ### Data for Analysis
-A subdirectory named data may be created in the strane directory to house
+A subdirectory named <b>data</b> may be created in the strane directory to house
 the data for analysis.
 
 ## Usage
