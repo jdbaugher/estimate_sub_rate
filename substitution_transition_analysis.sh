@@ -31,5 +31,5 @@ Rscript scripts/transition_estimation_w_gradient.Rscript
 # Perform significance testing of transitions (ttest and wilcox) adjusted with 
 # Bonferroni and produce plots
 echo "Running Step 5 - significance testing..."
-Rscript scripts/significance_test_and_plot.Rscript
+Rscript scripts/stats_and_graphics.Rscript
 echo "Analysis finished."
