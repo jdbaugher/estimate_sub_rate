@@ -1,5 +1,6 @@
-strane - Substitution TRANsition Estimation workflow
+strane 
 ======
+# Substitution TRANsition Estimation workflow
 
 This workflow provides software tools to estimate nucleotide substitution 
 rates over time from sequencing reads using statistical inference. The 
@@ -25,7 +26,7 @@ the data for analysis.
 To run the analysis - 
 From within a shell session, navigate to the strane directory and type:
 
-  bash substitution_transition_analysis.sh ./data
+    bash substitution_transition_analysis.sh ./data
 
 The analysis consists of five steps. The user will be notified when the script 
 has finished. If no errors are reported, the analysis is complete.
