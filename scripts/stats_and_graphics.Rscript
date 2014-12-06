@@ -155,34 +155,33 @@ lab1and2.results <- lab1and2.list[[2]]
 
 ### Plot results
 plot.new()
+pdf(file = paste("Lab",paste(lab,collapse="&",sep=""),".transitions-trimmed.pdf",sep=""),width=7,height=6)
 
-pdf(paste("Lab",paste(lab,collapse="&",sep=""),".transitions-trimmed.pdf",sep=""),width=7,height=6)
+  par(mfrow=c(3,1), oma = c(1,4,2,0) + 0.1, mar = c(1.3,0,1,1) + 0.1)
 
-par(mfrow=c(3,1), oma = c(1,4,2,0) + 0.1, mar = c(1.3,0,1,1) + 0.1)
+  boxplot(lab1and2.values,log='y', col=rep(c("white","gray"),ncol(lab1and2.values)), axes=F, frame.plot=TRUE)
+    axis(side=1, labels=FALSE, at=1:ncol(lab1and2.values))
+    axis(side=2, las=0, cex.axis=0.9)
+    mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
+    mtext("A.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
+    plot_stars(lab1and2.results$adjusted.wilcox.p.value)
 
-boxplot(lab1and2.values,log='y', col=rep(c("white","gray"),ncol(lab1and2.values)), axes=F, frame.plot=TRUE)
-axis(side=1, labels=FALSE, at=1:ncol(lab1and2.values))
-axis(side=2, las=0, cex.axis=0.9)
-mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
-mtext("A.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
-plot_stars(lab1and2.results$adjusted.wilcox.p.value)
+  boxplot(lab1.values,log='y', col=rep(c("white","gray"),ncol(lab1and2.values)), axes=F, frame.plot=TRUE)
+    axis(side=1, labels=FALSE, at=1:ncol(lab1.values))
+    axis(side=2, las=0, cex.axis=0.9)
+    mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
+    mtext("B.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
+    plot_stars(lab1.results$adjusted.wilcox.p.value)
 
-boxplot(lab1.values,log='y', col=rep(c("white","gray"),ncol(lab1and2.values)), axes=F, frame.plot=TRUE)
-axis(side=1, labels=FALSE, at=1:ncol(lab1.values))
-axis(side=2, las=0, cex.axis=0.9)
-mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
-mtext("B.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
-plot_stars(lab1.results$adjusted.wilcox.p.value)
+  boxplot(lab2.values,log='y',col=rep(c("white","gray"),ncol(lab2.values)),axes=F, frame.plot=TRUE)
+    axis(side=1, at=1:ncol(lab2.values), cex.axis=1.1,
+      labels=c('U->C','U->C','A->G','A->G','C->U','C->U',
+        'G->A','G->A','G->U','G->U','A->C', 'A->C',
+        'A->U','A->U','C->G','C->G','C->A','C->A',
+        'U->A','U->A','U->G','U->G','G->C','G->C'))
+    axis(side=2, las=0, cex.axis=0.9)
+    mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
+    mtext("C.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
+    plot_stars(lab2.results$adjusted.wilcox.p.value)
 
-boxplot(lab2.values,log='y',col=rep(c("white","gray"),ncol(lab2.values)),axes=F, frame.plot=TRUE)
-axis(side=1, at=1:ncol(lab2.values), cex.axis=1.1,
-  labels=c('U->C','U->C','A->G','A->G','C->U','C->U',
-      'G->A','G->A','G->U','G->U','A->C', 'A->C',
-      'A->U','A->U','C->G','C->G','C->A','C->A',
-      'U->A','U->A','U->G','U->G','G->C','G->C'))
-axis(side=2, las=0, cex.axis=0.9)
-mtext(side = 2, "Mutation Rate", line = 2.2, las=0)
-mtext("C.", 2, line=2, las = 2, padj=-4.8, cex=1.3, font=2)
-plot_stars(lab2.results$adjusted.wilcox.p.value)
-
-dev.off()
+trash <- dev.off()
