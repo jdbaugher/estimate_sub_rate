@@ -8,6 +8,14 @@
 freq.data<-read.delim("frequency_table.txt",header=T)
 freq.data <- freq.data[which(freq.data$Passage > 0),]
 
+# Remove positions with outlier mutation rates
+# Remove amplicon 3 positions 11 and 292 and amplicon 4 positions 326, 361, 393
+freq.data <- freq.data[-which(freq.data$Amplicon == 3 & freq.data$Position == 11),]
+freq.data <- freq.data[-which(freq.data$Amplicon == 3 & freq.data$Position == 292),]
+freq.data <- freq.data[-which(freq.data$Amplicon == 4 & freq.data$Position == 326),]
+freq.data <- freq.data[-which(freq.data$Amplicon == 4 & freq.data$Position == 361),]
+freq.data <- freq.data[-which(freq.data$Amplicon == 4 & freq.data$Position == 393),]
+
 # Prepare dataframe
 freq.data$P5.A <- freq.data$P5.C <- freq.data$P5.G <- freq.data$P5.T <- 
 freq.data$P10.A <- freq.data$P10.C <- freq.data$P10.G <- freq.data$P10.T <- 
