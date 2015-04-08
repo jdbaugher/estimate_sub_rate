@@ -3,10 +3,9 @@ estimate_sub_rate
 ### Nucleotide substitution rate estimation workflow
 
 This workflow provides software tools to estimate nucleotide substitution 
-rates over time from multiple sequence alignments using statistical inference. The 
-workflow accompanies an upcoming peer-reviewed journal article. The analysis
-results can be replicated using the haplotype data (*genotypes.sig.txt) 
-available at ????. Additional details will be provided as they become available.
+rates over time from multiple sequence alignments using statistical inference.
+The workflow accompanies an upcoming peer-reviewed journal article. Additional
+details will be provided as they become available.
 
 ## Requirements
 This workflow has been tested on MACOSX and linux operating systems
@@ -38,7 +37,7 @@ Copyright (c) 2014 Joseph D. Baugher, Ph.D.
 
 ## Maintainer
 
-Joseph D. Baugher, Ph.D., jbaughe2(at)jhmi.edu
+Joseph D. Baugher, Ph.D., joebaugher(at)hotmail.com
 
 
 

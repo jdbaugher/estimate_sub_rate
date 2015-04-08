@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 # expand_haplotypes.pl
-# Author: Joseph D. Baugher, <jbaughe2(at)jhmi.edu>
+# Author: Joseph D. Baugher, <joebaugher(at)hotmail.com>
 # Copyright (c) 2014 Joseph D. Baugher
 
 use strict;

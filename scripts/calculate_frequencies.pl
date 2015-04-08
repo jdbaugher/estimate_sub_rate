@@ -1,6 +1,6 @@
 #!/usr/bin/env perl -w
 # calculate_frequencies.pl
-# Author: Joseph D. Baugher, <jbaughe2(at)jhmi.edu>
+# Author: Joseph D. Baugher, <joebaugher(at)hotmail.com>
 # Copyright (c) 2014 Joseph D. Baugher
 
 use strict;
@@ -8,7 +8,7 @@ use Getopt::Long;
 use File::chdir;
 use File::Spec;
 
-use Bio::fastAPD;
+use Bio::fastAPD; #v1.10.0 or higher
 
 my $input_dir = "./";
 my $glob      = "*";
