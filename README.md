@@ -4,8 +4,11 @@ estimate_sub_rate
 
 This workflow provides software tools to estimate nucleotide substitution 
 rates over time from multiple sequence alignments using statistical inference.
-The workflow accompanies an upcoming peer-reviewed journal article. Additional
-details will be provided as they become available.
+The workflow accompanies the following peer-reviewed journal article:
+
+Julian TR, Baugher JD, Rippinger CM, Pinekenstein R, Kolawole AO, Mehoke TS, Wobus CE, 
+Feldman AB, Pineda FJ, Schwab KJ. Murine norovirus (MNV-1) exposure in vitro to the the purine
+nucleoside analog Ribavirin increases quasispecies diversity. Virus research. 2016 Jan 4;211:165-173.
 
 ## Requirements
 This workflow has been tested on MACOSX and linux operating systems
